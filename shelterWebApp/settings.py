@@ -31,6 +31,10 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt',
+
+    # thirdparties
+    'nested_admin',
 ]
 
 MIDDLEWARE = [
@@ -44,12 +48,13 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['*']
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 ROOT_URLCONF = 'shelterWebApp.urls'

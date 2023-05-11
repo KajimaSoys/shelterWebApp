@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 SECRET_KEY = 'django-insecure-rq+vyc#d-r=hf)sere6_$02=n(np%k8&kw4+q)2xn1=zb@)uiu'
 
 CORS_ALLOWED_ORIGINS = [
