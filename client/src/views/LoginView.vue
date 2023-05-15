@@ -43,6 +43,7 @@ export default {
               localStorage.setItem("refresh", response.data.refresh);
               axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access}`;
               this.$router.push("/"); // redirect to home page
+              ElMessage.success("Вы успешно авторизованы!");
             })
             .catch((error) => {
               if (error.response.data.detail === "Given token not valid for any token type") {

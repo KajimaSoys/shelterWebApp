@@ -15,7 +15,15 @@ app.use(router, axios)
 
 app.use(ElementPlus)
 
-let backendURL = import.meta.env.VITE_BACKEND_HOST
+console.log(import.meta.env.MODE)
+let backendURL = import.meta.env.VITE_BACKEND_HOST;
+console.log(backendURL)
+// console.log(import.meta.env.MODE)
+// if (process.env.VITE_BACKEND_HOST) {
+//   backendURL = process.env.VITE_BACKEND_HOST;
+// } else {
+//   backendURL = 'http://127.0.0.1:8000';
+// }
 axios.defaults.baseURL = backendURL
 
 app.mount('#app')

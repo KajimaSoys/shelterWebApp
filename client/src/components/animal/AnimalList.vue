@@ -1,5 +1,5 @@
 <template>
-  <div class="animal-list">
+  <div class="animal-list" v-if="animals.length > 0">
     <h1>Животные приюта</h1>
     <el-input class="animal-search" size="large" placeholder="Поиск.." v-model="searchText"></el-input>
 
@@ -43,6 +43,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="animal-list" v-else>
+    <h1>Приют пока не добавил животных..</h1>
   </div>
 </template>
 
@@ -175,58 +179,3 @@ export default {
   margin: 2rem;
 }
 </style>
-
-<!--<template>-->
-<!--    <div>-->
-<!--        <div>-->
-<!--            <input v-model="searchTerm" type="text" placeholder="Поиск...">-->
-<!--            &lt;!&ndash; Add filter components here &ndash;&gt;-->
-<!--        </div>-->
-<!--        <div v-for="animal in filteredAnimals" :key="animal.id" class="animal-card">-->
-<!--            <img :src="animal.photos.length > 0 ? animal.photos[0].photo : 'default_image_url'" alt="Animal photo">-->
-<!--            <h2>{{ animal.name }}</h2>-->
-<!--            <p><strong>Тип: </strong>{{ animal.animal_type }}</p>-->
-<!--            <p><strong>Порода: </strong>{{ animal.breed }}</p>-->
-<!--            <p><strong>Возраст: </strong>{{ animal.age }}</p>-->
-<!--            <p><strong>Пол: </strong>{{ animal.gender }}</p>-->
-<!--            <p><strong>Состояние здоровья: </strong>{{ animal.health_status }}</p>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</template>-->
-
-<!--<script>-->
-<!--export default {-->
-<!--  name: "AnimalList",-->
-<!--  props: {-->
-<!--    animals: {-->
-<!--      type: Array,-->
-<!--      required: true-->
-<!--    }-->
-<!--  },-->
-<!--  data() {-->
-<!--    return {-->
-<!--      searchTerm: ''-->
-<!--    };-->
-<!--  },-->
-<!--  computed: {-->
-<!--    filteredAnimals() {-->
-<!--      if (!this.searchTerm) {-->
-<!--        return this.animals;-->
-<!--      }-->
-<!--      const lowerCaseSearchTerm = this.searchTerm.toLowerCase();-->
-<!--      return this.animals.filter(animal => animal.name.toLowerCase().includes(lowerCaseSearchTerm));-->
-<!--    }-->
-<!--  }-->
-<!--};-->
-<!--</script>-->
-
-<!--<style scoped>-->
-<!--.animal-card {-->
-<!--  /* Add styles for animal card here */-->
-<!--}-->
-
-<!--img {-->
-<!--  width: 100px;-->
-<!--  height: 100px;-->
-<!--}-->
-<!--</style>-->

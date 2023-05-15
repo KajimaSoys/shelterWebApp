@@ -145,7 +145,9 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-try:
-    from .local_settings import *
-except ImportError:
+prod_mode = (os.environ.get('PROD') == 'True')
+if prod_mode:
     from .prod_settings import *
+else:
+    from .local_settings import *
+
