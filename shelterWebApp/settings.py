@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     # 3rd parties
     'nested_admin',
     'ckeditor',
-
+    'adminsortable2',
 ]
 
 MIDDLEWARE = [

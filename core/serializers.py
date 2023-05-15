@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import Shelter, Animal, AnimalPhoto, ShelterPhoto, MoneyReport
 from django.contrib.auth.models import User
 
+gender_choices = (
+        ('male', 'Самец'),
+        ('female', 'Самка'),
+        ('unknown', 'Неизвестно'),
+    )
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -46,6 +52,7 @@ class MoneyReportSerializer(serializers.ModelSerializer):
 
 class AnimalSerializer(serializers.ModelSerializer):
     photos = AnimalPhotoSerializer(many=True, read_only=True)
+    gender = serializers.ChoiceField(choices=gender_choices, source='get_gender_display')
 
     class Meta:
         model = Animal

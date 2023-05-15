@@ -23,12 +23,19 @@ class Shelter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
+
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Приют'
         verbose_name_plural = 'Приюты'
+        ordering = ['order']
 
 
 class Animal(models.Model):
@@ -48,17 +55,30 @@ class Animal(models.Model):
     health_status = models.TextField(blank=True, verbose_name='Состояние здоровья')
     description = RichTextField(blank=True, verbose_name='Описание')
 
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
+
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Животное'
         verbose_name_plural = 'Животные'
+        ordering = ['order']
 
 
 class AnimalPhoto(models.Model):
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos', verbose_name='Животное')
     photo = models.ImageField(upload_to='animal_photos/', verbose_name='Фото')
+
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
 
     def __str__(self):
         return f'{self.animal.name} - Фото {self.pk}'
@@ -66,11 +86,18 @@ class AnimalPhoto(models.Model):
     class Meta:
         verbose_name = 'Фотография животного'
         verbose_name_plural = 'Фотографии животных'
+        ordering = ['order']
 
 
 class ShelterPhoto(models.Model):
     shelter = models.ForeignKey(Shelter, on_delete=models.CASCADE, related_name='photos', verbose_name='Приют')
     photo = models.ImageField(upload_to='shelter_photos/', verbose_name='Фото')
+
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
 
     def __str__(self):
         return f'{self.shelter.name} - Фото {self.pk}'
@@ -78,6 +105,7 @@ class ShelterPhoto(models.Model):
     class Meta:
         verbose_name = 'Фотография приюта'
         verbose_name_plural = 'Фотографии приютов'
+        ordering = ['order']
 
 
 class MoneyReport(models.Model):
@@ -87,9 +115,16 @@ class MoneyReport(models.Model):
     amount_spent = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Потраченная сумма')
     photo = models.ImageField(upload_to='money_reports/', blank=True, null=True, verbose_name='Фото')
 
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
+
     def __str__(self):
         return self.title
 
     class Meta:
         verbose_name = 'Отчет о расходах'
         verbose_name_plural = 'Отчеты о расходах'
+        ordering = ['order']

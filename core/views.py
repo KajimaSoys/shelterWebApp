@@ -37,8 +37,10 @@ class IsShelterOwner(permissions.BasePermission):
 
 class ShelterListCreateView(generics.ListCreateAPIView):
     queryset = Shelter.objects.all()
+    ordering = ['order']
     serializer_class = ShelterListSerializer
     pagination_class = StandardResultsSetPagination
+
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -52,6 +54,7 @@ class ShelterListCreateView(generics.ListCreateAPIView):
 class ShelterRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Shelter.objects.all()
     serializer_class = ShelterSerializer
+    ordering = ['order']
 
     def get_permissions(self):
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
@@ -115,6 +118,7 @@ class ShelterPhotoViewSet(viewsets.ModelViewSet):
 class MoneyReportViewSet(viewsets.ModelViewSet):
     queryset = MoneyReport.objects.all()
     serializer_class = MoneyReportSerializer
+
 
     def get_queryset(self):
         shelter = self.request.query_params.get('shelter', None)

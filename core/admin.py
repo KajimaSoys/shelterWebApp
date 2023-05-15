@@ -3,6 +3,7 @@ from .models import Shelter, Animal, AnimalPhoto, ShelterPhoto, MoneyReport
 from .forms import AnimalPhotoForm, ShelterPhotoForm
 import nested_admin
 from django.utils.html import format_html
+from adminsortable2.admin import SortableAdminMixin
 
 
 class ShelterPhotoInline(nested_admin.NestedStackedInline):
@@ -29,12 +30,13 @@ class AnimalInline(nested_admin.NestedStackedInline):
 
 
 # @admin.register(Shelter)
-class ShelterAdmin(nested_admin.NestedModelAdmin):
+class ShelterAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('name', 'city', 'email', 'phone_number', 'published', 'rating')
     list_filter = ('published', 'city', 'rating')
     search_fields = ('name', 'city', 'email', 'phone_number')
     readonly_fields = ('rating', 'user')
     inlines = [ShelterPhotoInline, MoneyReportInline, AnimalInline]
+
 
     def save_model(self, request, obj, form, change):
         """
@@ -46,7 +48,7 @@ class ShelterAdmin(nested_admin.NestedModelAdmin):
 
 
 # @admin.register(Animal)
-class AnimalAdmin(nested_admin.NestedModelAdmin):
+class AnimalAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('name', 'shelter', 'animal_type', 'breed', 'age', 'gender')
     list_filter = ('shelter', 'animal_type', 'breed', 'gender')
     search_fields = ('name', 'animal_type', 'breed')
@@ -54,7 +56,7 @@ class AnimalAdmin(nested_admin.NestedModelAdmin):
 
 
 # @admin.register(AnimalPhoto)
-class AnimalPhotoAdmin(nested_admin.NestedModelAdmin):
+class AnimalPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('animal', 'photo_preview', 'photo')
     list_filter = ('animal',)
 
@@ -67,7 +69,7 @@ class AnimalPhotoAdmin(nested_admin.NestedModelAdmin):
 
 
 # @admin.register(ShelterPhoto)
-class ShelterPhotoAdmin(nested_admin.NestedModelAdmin):
+class ShelterPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('shelter', 'photo_preview', 'photo')
     list_filter = ('shelter',)
 
@@ -80,7 +82,7 @@ class ShelterPhotoAdmin(nested_admin.NestedModelAdmin):
 
 
 # @admin.register(MoneyReport)
-class MoneyReportAdmin(nested_admin.NestedModelAdmin):
+class MoneyReportAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('shelter', 'title', 'amount_spent', 'photo')
     list_filter = ('shelter',)
     search_fields = ('title',)

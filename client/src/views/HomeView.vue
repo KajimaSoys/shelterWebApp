@@ -33,7 +33,8 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 48.37%, rgba(0, 0, 0, 0.3) 100%),  url("/main-background.jpg");
+  background-image: url("/main-background.jpg");
+  /* linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 48.37%, rgba(0, 0, 0, 0.3) 100%),   */
   background-size: cover;
   background-position: center center;
   transform: scale(1);
