@@ -1,0 +1,66 @@
+  version: '3.8'
+
+  services:
+    django:
+      build:
+        context: .
+      container_name: django-shelter
+      environment:
+        - DEBUG=${DEBUG}
+        - SECRET_KEY=${SECRET_KEY}
+        - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
+        - DB_HOST=${DB_HOST}
+        - DB_PORT=${DB_PORT}
+      volumes:
+        - ./:/app
+        - ./media:/app/media
+      depends_on:
+        - db
+      networks:
+        - shelter_network
+
+    vue:
+      build: ./client
+      container_name: vue-shelter
+      environment:
+        - VITE_BACKEND_HOST=${VITE_BACKEND_HOST}
+      volumes:
+        - ./client:/app
+      networks:
+        - shelter_network
+
+    nginx:
+      build: ./nginx
+      container_name: nginx-shelter
+      ports:
+        - "80:80"
+      depends_on:
+        - django
+        - vue
+      networks:
+        - shelter_network
+      volumes:
+        - ./static:/app/static
+        - ./media:/app/media
+
+    db:
+      image: postgres:13
+      container_name: db-shelter
+      restart: always
+      environment:
+        - POSTGRES_DB=${DB_NAME}
+        - POSTGRES_USER=${DB_USER}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
+      volumes:
+        - db_data:/var/lib/postgresql/data
+      networks:
+        - shelter_network
+
+  volumes:
+    db_data:
+
+  networks:
+    shelter_network:
