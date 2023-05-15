@@ -1,11 +1,10 @@
 <template>
-  <div>
-    <Navbar />
-    <Search />
-    <FavoriteShelters />
-    <SearchResult />
-    <Footer />
-  </div>
+  <div class="main-background"> </div>
+  <Navbar />
+  <Search />
+  <FavoriteShelters />
+  <SearchResult />
+  <Footer />
 </template>
 
 <script>
@@ -28,5 +27,16 @@ export default {
 </script>
 
 <style scoped>
+
+.main-background{
+  /*background:;*/
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 48.37%, rgba(0, 0, 0, 0.3) 100%),  url("/main-background.jpg");
+  background-size: cover;
+  background-position: center center;
+  transform: scale(1);
+}
 
 </style>

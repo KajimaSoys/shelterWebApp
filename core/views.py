@@ -2,7 +2,24 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, viewsets
 from django.contrib.auth.models import User
 from .models import Shelter, Animal, AnimalPhoto, ShelterPhoto, MoneyReport
-from .serializers import ShelterSerializer, AnimalSerializer, AnimalPhotoSerializer, ShelterPhotoSerializer, MoneyReportSerializer, RegisterSerializer
+from .serializers import ShelterSerializer, ShelterListSerializer, AnimalSerializer, AnimalPhotoSerializer, ShelterPhotoSerializer, MoneyReportSerializer, RegisterSerializer
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'per_page'
+    max_page_size = 1000
+
+    def get_paginated_response(self, data):
+        return Response({
+            'results': data,
+            'total_pages': self.page.paginator.num_pages,
+            'current_page': self.page.number,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+        })
 
 
 class RegisterView(generics.CreateAPIView):
@@ -20,7 +37,8 @@ class IsShelterOwner(permissions.BasePermission):
 
 class ShelterListCreateView(generics.ListCreateAPIView):
     queryset = Shelter.objects.all()
-    serializer_class = ShelterSerializer
+    serializer_class = ShelterListSerializer
+    pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -34,7 +52,16 @@ class ShelterListCreateView(generics.ListCreateAPIView):
 class ShelterRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Shelter.objects.all()
     serializer_class = ShelterSerializer
-    permission_classes = [IsShelterOwner | permissions.IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [IsShelterOwner(), permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ShelterSerializer  # The detailed serializer
+        return ShelterListSerializer  # The basic serializer
 
 
 class AnimalViewSet(viewsets.ModelViewSet):

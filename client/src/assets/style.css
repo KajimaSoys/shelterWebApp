@@ -12,19 +12,38 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --el-color-primary: #ff5555!important;
+  --el-color-primary-light-1: #FF8E8E!important;
+  --el-color-primary-light-2: #FFB8B8!important;
+  --el-color-primary-light-3: #FFD8D8!important;
+  --el-color-primary-light-4: #FFECEC!important;
+  --el-color-primary-light-5: #FFF7F7!important;
+  --el-color-primary-light-6: #FFF9F9!important;
+  --el-color-primary-light-7: #FFFCFC!important;
+  --el-color-primary-light-8: #FFFDFD!important;
+  --el-color-primary-light-9: #FFFEFE!important;
+  --el-color-primary-dark-1: #E60000!important;
+  --el-color-primary-dark-2: #B30000!important;
+  --el-color-primary-dark-3: #660000!important;
+  --el-color-primary-text: #FFFFFF!important;
+  --el-color-primary-border: #FF5555!important;
+  --el-color-primary-shadow: rgba(255, 85, 85, 0.3)!important;
+
 }
 
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  /*max-width: 1280px;*/
+  /*margin: 0 auto;*/
+  /*padding: 2rem;*/
   text-align: center;
 }

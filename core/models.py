@@ -1,23 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField
 
 
 class Shelter(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT, verbose_name='Пользователь')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь')
     name = models.CharField(max_length=255, verbose_name='Название')
-    description = models.TextField(blank=True, verbose_name='Описание')
+    description = RichTextField(blank=True, verbose_name='Описание')
     city = models.CharField(max_length=255, verbose_name='Город')
     street = models.CharField(max_length=255, verbose_name='Улица')
     house = models.CharField(max_length=255, blank=True, verbose_name='Дом')
     rating = models.FloatField(default=0, verbose_name='Рейтинг')
     published = models.BooleanField(default=False, verbose_name='Опубликовано')
-    additional_info = models.TextField(blank=True, verbose_name='Дополнительная информация')
+    additional_info = RichTextField(blank=True, verbose_name='Дополнительная информация')
     website_link = models.URLField(blank=True, verbose_name='Сайт')
     instagram_link = models.URLField(blank=True, verbose_name='Instagram')
     telegram_link = models.URLField(blank=True, verbose_name='Telegram')
     vk_link = models.URLField(blank=True, verbose_name='ВКонтакте')
     phone_number = models.CharField(max_length=255, verbose_name='Телефон')
     email = models.EmailField(verbose_name='Email')
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
     def __str__(self):
         return self.name
@@ -42,7 +46,7 @@ class Animal(models.Model):
     gender = models.CharField(max_length=255, blank=True, verbose_name='Пол', choices=gender_choices)
     weight = models.IntegerField(null=True, blank=True, verbose_name='Вес (граммы)')
     health_status = models.TextField(blank=True, verbose_name='Состояние здоровья')
-    description = models.TextField(blank=True, verbose_name='Описание')
+    description = RichTextField(blank=True, verbose_name='Описание')
 
     def __str__(self):
         return self.name

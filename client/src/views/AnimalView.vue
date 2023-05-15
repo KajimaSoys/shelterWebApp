@@ -1,9 +1,7 @@
 <template>
-  <div>
     <Navbar />
     <Animal />
     <Footer />
-  </div>
 </template>
 
 <script>

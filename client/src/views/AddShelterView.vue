@@ -1,11 +1,9 @@
 <template>
-  <div>
     <Navbar />
     <div class="form-container">
       <AddShelterForm />
     </div>
     <Footer />
-  </div>
 </template>
 
 <script>

@@ -88,3 +88,21 @@ class ShelterSerializer(serializers.ModelSerializer):
                   'animals',
                   'photos',
                   'money_reports')
+
+
+class ShelterListSerializer(serializers.ModelSerializer):
+    photos = ShelterPhotoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Shelter
+        fields = ('id',
+                  'name',
+                  'city',
+                  'street',
+                  'house',
+                  'phone_number',
+                  'website_link',
+                  'email',
+                  'description',
+                  'rating',
+                  'photos',)

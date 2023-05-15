@@ -1,5 +1,4 @@
 <template>
-  <div>
     <Navbar />
     <div class="about">
       <h1>О проекте</h1>
@@ -24,7 +23,6 @@
       </p>
     </div>
     <Footer />
-  </div>
 </template>
 
 <script>

@@ -2,16 +2,18 @@
   <div class="login">
     <el-card>
       <el-form ref="loginForm" :model="loginForm" @submit.native.prevent="submitForm('loginForm')">
-        <el-form-item label="Username" prop="username">
+        <el-form-item label="Логин" prop="username">
           <el-input v-model="loginForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="Password" prop="password">
+        <el-form-item label="Пароль" prop="password">
           <el-input type="password" v-model="loginForm.password"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('loginForm')">Log in</el-button>
+          <el-button type="primary" @click="submitForm('loginForm')">Войти</el-button>
         </el-form-item>
       </el-form>
+
+      <p class="register-cta">Еще нет аккаунта? <router-link to="/register">Зарегистрируйтесь!</router-link></p>
     </el-card>
   </div>
 </template>
@@ -21,7 +23,7 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 
 export default {
-   name: "LoginView",
+  name: "LoginView",
   data() {
     return {
       loginForm: {
@@ -73,6 +75,29 @@ export default {
 <style scoped>
 .login {
   width: 400px;
-  margin: 50px auto;
+  margin: 24% auto;
+}
+
+.register-cta {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+:deep(.el-form-item__label) {
+  min-width: 20%;
+}
+
+:deep(.el-button){
+  margin: 0.8rem auto;
+}
+
+.register-cta a{
+  color: #ff5555;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.register-cta a:hover{
+  color: #ff2f2f;
 }
 </style>

@@ -1,11 +1,9 @@
 <template>
-  <div>
     <Navbar />
     <div class="form-container">
       <AddFundraisingForm />
     </div>
     <Footer />
-  </div>
 </template>
 
 <script>

@@ -33,8 +33,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
 
-    # thirdparties
+    # 3rd parties
     'nested_admin',
+    'ckeditor',
+
 ]
 
 MIDDLEWARE = [
@@ -118,6 +120,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ckeditor
+CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': [
+            {'name': 'basicstyles', 'items': ['Bold']},
+            {'name': 'paragraph', 'items': ['BulletedList', 'NumberedList']},
+            {'name': 'document', 'items': ['Preview']},
+            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
+        ],
+        'toolbarGroups': [
+            {'name': 'basicstyles', 'groups': ['basicstyles']},
+            {'name': 'paragraph', 'groups': ['list', 'blocks']},
+            {'name': 'document', 'groups': ['mode']},
+            {'name': 'tools', 'groups': ['tools']},
+        ],
+        'extraPlugins': 'maximize',
+        'forcePasteAsPlainText': True,
+        'format_tags': 'p',
+        'forceSimpleAmpersand': True,
+    }
+}
 
 try:
     from .local_settings import *
