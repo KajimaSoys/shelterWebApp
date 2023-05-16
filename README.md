@@ -13,6 +13,11 @@
 ```shell
 git clone https://github.com/KajimaSoys/shelterWebApp.git
 ```
+
+### 3. Перейдите в репозиторий
+```shell
+cd ./shelterWebApp
+```
 <br>
 
 ## Быстрое развертывание с помощью Docker 
