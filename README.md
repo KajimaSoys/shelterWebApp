@@ -85,12 +85,22 @@ pip install -r req.txt
 python manage.py migrate
 ```
 
+#### 5. Инициализируйте тестовые данные
+```shell
+python manage.py init_db
+```
+
 #### 5. Создайте суперюзера
 ```shell
 python manage.py createsuperuser
 ```
 
-#### 6. Запустите сервер
+#### 6. Обработайте статические файлы
+```shell
+python manage.py collectstatic --noinput
+```
+
+#### 7. Запустите сервер
 ```shell
 python manage.py runserver
 ```
