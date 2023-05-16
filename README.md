@@ -90,7 +90,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Административная панель находится по адресу http://localhost:8000/admin/
+Административная панель находится по адресу http://127.0.0.1:8000/admin/
 
 ### 6. Запустите фронтенд
 
