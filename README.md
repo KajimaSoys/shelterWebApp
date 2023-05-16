@@ -9,6 +9,13 @@
 
 `для x32` https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-32-bit.exe
 
+
+
+**Введите на всякий случай, чтобы избежать проблем с entrypoint.sh**
+```shell
+git config --global core.autocrlf input
+```
+
 ### 2. Клонируйте репозиторий
 ```shell
 git clone https://github.com/KajimaSoys/shelterWebApp.git
@@ -90,17 +97,7 @@ python manage.py migrate
 python manage.py init_db
 ```
 
-#### 5. Создайте суперюзера
-```shell
-python manage.py createsuperuser
-```
-
-#### 6. Обработайте статические файлы
-```shell
-python manage.py collectstatic --noinput
-```
-
-#### 7. Запустите сервер
+#### 6. Запустите сервер
 ```shell
 python manage.py runserver
 ```
