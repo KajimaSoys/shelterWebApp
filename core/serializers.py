@@ -99,6 +99,7 @@ class ShelterSerializer(serializers.ModelSerializer):
 
 class ShelterListSerializer(serializers.ModelSerializer):
     photos = ShelterPhotoSerializer(many=True, read_only=True)
+    rounded_rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Shelter
@@ -112,4 +113,5 @@ class ShelterListSerializer(serializers.ModelSerializer):
                   'email',
                   'description',
                   'rating',
+                  'rounded_rating',
                   'photos',)

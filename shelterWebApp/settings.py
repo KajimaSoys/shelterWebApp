@@ -33,10 +33,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
 
+
     # 3rd parties
     'nested_admin',
     'ckeditor',
     'adminsortable2',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

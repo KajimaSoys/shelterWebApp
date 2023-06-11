@@ -16,13 +16,13 @@
             :key="index"
             class="image-card"
           >
-            <img :src="photo.photo" :key="photo.id" alt="Изображение приюта">
+            <a :href="photo.photo" target="_blank"><img :src="photo.photo" :key="photo.id" alt="Изображение приюта"></a>
           </swiper-slide>
         </swiper>
 
         <img v-else src="/no-photo.gif">
 
-        <div class="swiper-controls" v-if="shelter.photos.length > 0">
+        <div class="swiper-controls" v-if="shelter.photos.length > 1">
           <div class="swiper-button-prev swiper-button-prev-1">
             <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M8.0973 0.156443L0.183064 8.53296L0.182131 8.53401L0.172611 8.54412C-0.0572777 8.78808 -0.0578003 9.2114 0.172625 9.456L0.181719 9.46565L0.182583 9.46662L8.09723 17.8436C8.29484 18.0527 8.58788 18.0522 8.78497 17.8416C9.01494 17.5958 9.01372 17.1747 8.78313 16.9306L1.86931 9.61291H19.4835C19.7116 9.61291 20 9.39746 20 9.00001C20 8.60256 19.7116 8.3871 19.4835 8.3871H1.86919L8.78325 1.06935C9.01382 0.825229 9.01501 0.404166 8.78505 0.158436C8.58785 -0.0522866 8.29489 -0.0526697 8.0973 0.156443Z" fill="black"/>
@@ -221,6 +221,16 @@ svg path{
 
 :deep(.swiper-wrapper) {
   align-items: center;
+  height: 350px;
+}
+
+:deep(.swiper-slide) {
+  display: flex;
+}
+
+:deep(.swiper-slide a) {
+  display: flex;
+  width: 100%;
 }
 
 .shelter-content-info {

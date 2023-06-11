@@ -1,15 +1,42 @@
 <template>
   <div class="shelter-list">
     <h1>Приюты для животных</h1>
-    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText"></el-input>
+    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText" @input="getShelters"></el-input>
 
     <div class="main-content">
       <div class="filters">
         <h2>Фильтры</h2>
-        <!-- TODO Add filter components here -->
-        <div style="color: gray">Скоро..</div>
+      <!-- City Filter -->
+        <div>
+          <label class="filter-label">Город:</label>
+          <div style="margin-top: 1rem">
+            <el-select v-model="selectedCity" placeholder="Выберите город" clearable>
+              <el-option
+                v-for="city in cities"
+                :key="city"
+                :label="city"
+                :value="city">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+
+      <!-- Rating Filter -->
+        <div>
+          <label class="filter-label">Рейтинг:</label>
+          <el-slider
+            v-model="selectedRating"
+            :min="0"
+            :max="5"
+            range
+          >
+          </el-slider>
+        </div>
+
+      <!-- Filter Button -->
+        <el-button type="primary" @click="getShelters">Применить</el-button>
       </div>
-      <div class="shelters">
+      <div class="shelters" v-if="shelters.length">
         <div class="pagination">
           <el-button @click="prevPage" :disabled="currentPage === 1">Предыдущая</el-button>
           <el-button disabled>{{ currentPage }}</el-button>
@@ -71,6 +98,9 @@
           </el-select>
         </div>
       </div>
+      <div v-else class="shelters">
+        Приюты не найдены. Попробуйте изменить критерии поиска.
+      </div>
     </div>
 
 
@@ -89,6 +119,9 @@ export default {
       currentPage: 1,
       totalPages: 1,
       perPage: 10,
+      cities: [],  // array to store the unique cities
+      selectedCity: '',
+      selectedRating: [0,5],
     };
   },
   methods: {
@@ -98,12 +131,26 @@ export default {
         .get("/api/v1/shelters/", {
           params: {
             page: this.currentPage,
-            per_page: this.perPage
+            per_page: this.perPage,
+            search: this.searchText,
+            city: this.selectedCity,
+            rating_min: this.selectedRating[0],
+            rating_max: this.selectedRating[1],
           }
         })
         .then(response => {
           this.shelters = response.data.results;
           this.totalPages = response.data.total_pages;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    getCities() {
+      axios
+        .get("/api/v1/shelters/cities/")
+        .then(response => {
+          this.cities = response.data;
         })
         .catch(error => {
           console.error(error);
@@ -141,6 +188,7 @@ export default {
   },
   created() {
     this.getShelters();
+    this.getCities();
   }
 };
 </script>
@@ -158,11 +206,20 @@ export default {
   display: flex;
   gap: 1em;
 }
+
 .filters {
   flex: 1;
   border-right: 1px solid #ccc;
   padding-right: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
+
+.filter-label{
+  /*margin-bottom: 1rem;*/
+}
+
 .shelters {
   flex: 3;
 }

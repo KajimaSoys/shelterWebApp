@@ -12,8 +12,8 @@
       <el-button v-if="!isAuthenticated" type="link" @click="goToLogin">Войти</el-button>
       <div v-else>
         <span class="username">{{ username }}</span>
-        <el-button type="plain" disabled @click="goToAccount">Мой аккаунт</el-button>
-        <el-button type="plain" @click="logout">Выйти</el-button>
+        <el-button type="default" effect="plain" disabled @click="goToAccount">Мой аккаунт</el-button>
+        <el-button type="default" effect="plain" @click="logout">Выйти</el-button>
       </div>
     </div>
   </el-header>

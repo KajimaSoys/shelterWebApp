@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
+import math
 
 
 class Shelter(models.Model):
@@ -28,6 +29,10 @@ class Shelter(models.Model):
         blank=False,
         null=False,
     )
+
+    @property
+    def rounded_rating(self):
+        return math.ceil(self.rating)
 
     def __str__(self):
         return self.name

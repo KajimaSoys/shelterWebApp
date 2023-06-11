@@ -1,6 +1,6 @@
 <template>
     <Navbar />
-    <Animal />
+    <Animal v-if="animal != null" :animal="animal"/>
     <Footer />
 </template>
 
@@ -8,6 +8,7 @@
 import Navbar from "@/components/common/Navbar.vue";
 import Footer from "@/components/common/Footer.vue";
 import Animal from "@/components/animal/Animal.vue";
+import axios from "axios";
 
 export default {
   name: "AnimalView",
@@ -15,6 +16,29 @@ export default {
     Navbar,
     Footer,
     Animal
+  },
+  props: [
+    'id',
+    'animalId'
+  ],
+  data() {
+    return {
+      animal: null
+    }
+  },
+  created() {
+    this.fetchAnimal();
+  },
+  methods: {
+    fetchAnimal() {
+      axios.get(`api/v1/animals/${this.$route.params['animalId']}/`)
+        .then(response => {
+          this.animal = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        })
+    }
   }
 };
 </script>

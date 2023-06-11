@@ -1,10 +1,15 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics, permissions, viewsets, filters
 from django.contrib.auth.models import User
 from .models import Shelter, Animal, AnimalPhoto, ShelterPhoto, MoneyReport
 from .serializers import ShelterSerializer, ShelterListSerializer, AnimalSerializer, AnimalPhotoSerializer, ShelterPhotoSerializer, MoneyReportSerializer, RegisterSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from .filters import ShelterFilter
+import django_filters
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -37,9 +42,12 @@ class IsShelterOwner(permissions.BasePermission):
 
 class ShelterListCreateView(generics.ListCreateAPIView):
     queryset = Shelter.objects.all()
-    ordering = ['order']
     serializer_class = ShelterListSerializer
+    filter_backends = [filters.SearchFilter, django_filters.rest_framework.DjangoFilterBackend]
+    search_fields = ['name', 'city', 'email', 'phone_number']
+    filterset_class = ShelterFilter
     pagination_class = StandardResultsSetPagination
+    ordering = ['order']
 
 
     def perform_create(self, serializer):
@@ -65,6 +73,13 @@ class ShelterRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return ShelterSerializer  # The detailed serializer
         return ShelterListSerializer  # The basic serializer
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def unique_cities(request):
+    cities = Shelter.objects.values_list('city', flat=True).distinct()
+    return JsonResponse(list(cities), safe=False)
 
 
 class AnimalViewSet(viewsets.ModelViewSet):

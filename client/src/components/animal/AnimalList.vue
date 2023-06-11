@@ -17,7 +17,7 @@
           <el-button @click="nextPage" :disabled="currentPage === totalPages">Следующая</el-button>
         </div>
 
-        <el-card v-for="animal in paginatedAnimals" :key="animal.id" class="animal-card">
+        <el-card v-for="animal in paginatedAnimals" :key="animal.id" @click="goToAnimal(animal.shelter, animal.id)" class="animal-card">
           <div class="animal-card-image">
             <img :src="animal.photos.length > 0 ? animal.photos[0].photo : '/no-photo.gif'">
           </div>
@@ -90,6 +90,9 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
+    },
+    goToAnimal(id, animalId) {
+      this.$router.push(`/shelter/${id}/animal/${animalId}`);
     },
   },
 };

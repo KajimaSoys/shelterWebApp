@@ -1,8 +1,8 @@
 <template>
     <Navbar />
-    <ShelterInfo :shelter="shelter" />
-    <AnimalList :animals="shelter.animals" />
-    <FundsSpent :moneyReports="shelter.money_reports" />
+    <ShelterInfo v-if="shelter != null" :shelter="shelter" />
+    <AnimalList v-if="shelter != null" :animals="shelter.animals" />
+    <FundsSpent v-if="shelter != null" :moneyReports="shelter.money_reports" />
     <Footer />
 </template>
 
@@ -23,6 +23,9 @@ export default {
     AnimalList,
     FundsSpent
   },
+  props: [
+    'id',
+  ],
   data() {
     return {
       shelter: null

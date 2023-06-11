@@ -40,4 +40,5 @@ urlpatterns = [
 
     path('api/v1/shelters/', views.ShelterListCreateView.as_view(), name='shelter-list-create'),
     path('api/v1/shelters/<int:pk>/', views.ShelterRetrieveUpdateDestroyView.as_view(), name='shelter-retrieve-update-destroy'),
+    path('api/v1/shelters/cities/', views.unique_cities, name='unique-cities'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
