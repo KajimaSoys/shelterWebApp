@@ -1,12 +1,13 @@
 <template>
   <div class="shelter-list">
     <h1>Приюты для животных</h1>
-    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText" @input="getShelters"></el-input>
+    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText" @input="debouncedGetShelters"></el-input>
 
     <div class="main-content">
       <div class="filters">
         <h2>Фильтры</h2>
-      <!-- City Filter -->
+
+      <!-- Фильтр города -->
         <div>
           <label class="filter-label">Город:</label>
           <div style="margin-top: 1rem">
@@ -21,7 +22,7 @@
           </div>
         </div>
 
-      <!-- Rating Filter -->
+      <!-- Фильтр по рейтингу -->
         <div>
           <label class="filter-label">Рейтинг:</label>
           <el-slider
@@ -33,7 +34,6 @@
           </el-slider>
         </div>
 
-      <!-- Filter Button -->
         <el-button type="primary" @click="getShelters">Применить</el-button>
       </div>
       <div class="shelters" v-if="shelters.length">
@@ -109,6 +109,8 @@
 
 <script>
 import axios from "axios";
+import _ from "lodash";
+import {ElNotification} from "element-plus";
 
 export default {
   name: "ShelterList",
@@ -119,9 +121,11 @@ export default {
       currentPage: 1,
       totalPages: 1,
       perPage: 10,
-      cities: [],  // array to store the unique cities
+      cities: [],
       selectedCity: '',
       selectedRating: [0,5],
+
+      debouncedGetShelters: _.debounce(this.getShelters, 300),
     };
   },
   methods: {
@@ -144,6 +148,11 @@ export default {
         })
         .catch(error => {
           console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при получении списка приютов',
+            type: 'error',
+          })
         });
     },
     getCities() {
@@ -154,6 +163,11 @@ export default {
         })
         .catch(error => {
           console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при получении списка городов для фильтра',
+            type: 'error',
+          })
         });
     },
     prevPage() {

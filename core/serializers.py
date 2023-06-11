@@ -77,7 +77,7 @@ class ShelterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shelter
         fields = ('id',
-                  'user',
+                  'owner',
                   'name',
                   'description',
                   'city',

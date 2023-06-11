@@ -4,8 +4,19 @@ from ckeditor.fields import RichTextField
 import math
 
 
-class Shelter(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь')
+class OrderedModel(models.Model):
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Shelter(OrderedModel):
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь')
     name = models.CharField(max_length=255, verbose_name='Название')
     description = RichTextField(blank=True, verbose_name='Описание')
     city = models.CharField(max_length=255, verbose_name='Город')
@@ -24,12 +35,6 @@ class Shelter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
-    order = models.PositiveIntegerField(
-        default=0,
-        blank=False,
-        null=False,
-    )
-
     @property
     def rounded_rating(self):
         return math.ceil(self.rating)
@@ -43,7 +48,7 @@ class Shelter(models.Model):
         ordering = ['order']
 
 
-class Animal(models.Model):
+class Animal(OrderedModel):
     shelter = models.ForeignKey(Shelter, on_delete=models.CASCADE, related_name='animals', verbose_name='Приют')
     name = models.CharField(max_length=255, verbose_name='Имя')
     animal_type = models.CharField(max_length=255, verbose_name='Тип животного')
@@ -60,12 +65,6 @@ class Animal(models.Model):
     health_status = models.TextField(blank=True, verbose_name='Состояние здоровья')
     description = RichTextField(blank=True, verbose_name='Описание')
 
-    order = models.PositiveIntegerField(
-        default=0,
-        blank=False,
-        null=False,
-    )
-
     def __str__(self):
         return self.name
 
@@ -75,34 +74,9 @@ class Animal(models.Model):
         ordering = ['order']
 
 
-class AnimalPhoto(models.Model):
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos', verbose_name='Животное')
-    photo = models.ImageField(upload_to='animal_photos/', verbose_name='Фото')
-
-    order = models.PositiveIntegerField(
-        default=0,
-        blank=False,
-        null=False,
-    )
-
-    def __str__(self):
-        return f'{self.animal.name} - Фото {self.pk}'
-
-    class Meta:
-        verbose_name = 'Фотография животного'
-        verbose_name_plural = 'Фотографии животных'
-        ordering = ['order']
-
-
-class ShelterPhoto(models.Model):
+class ShelterPhoto(OrderedModel):
     shelter = models.ForeignKey(Shelter, on_delete=models.CASCADE, related_name='photos', verbose_name='Приют')
     photo = models.ImageField(upload_to='shelter_photos/', verbose_name='Фото')
-
-    order = models.PositiveIntegerField(
-        default=0,
-        blank=False,
-        null=False,
-    )
 
     def __str__(self):
         return f'{self.shelter.name} - Фото {self.pk}'
@@ -113,18 +87,25 @@ class ShelterPhoto(models.Model):
         ordering = ['order']
 
 
-class MoneyReport(models.Model):
+class AnimalPhoto(OrderedModel):
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='photos', verbose_name='Животное')
+    photo = models.ImageField(upload_to='animal_photos/', verbose_name='Фото')
+
+    def __str__(self):
+        return f'{self.animal.name} - Фото {self.pk}'
+
+    class Meta:
+        verbose_name = 'Фотография животного'
+        verbose_name_plural = 'Фотографии животных'
+        ordering = ['order']
+
+
+class MoneyReport(OrderedModel):
     shelter = models.ForeignKey(Shelter, on_delete=models.CASCADE, related_name='money_reports', verbose_name='Приют')
     title = models.CharField(max_length=255, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
     amount_spent = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Потраченная сумма')
     photo = models.ImageField(upload_to='money_reports/', blank=True, null=True, verbose_name='Фото')
-
-    order = models.PositiveIntegerField(
-        default=0,
-        blank=False,
-        null=False,
-    )
 
     def __str__(self):
         return self.title

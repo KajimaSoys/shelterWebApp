@@ -29,25 +29,22 @@ class AnimalInline(nested_admin.NestedStackedInline):
     inlines = [AnimalPhotoInline]
 
 
-# @admin.register(Shelter)
 class ShelterAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('name', 'city', 'email', 'phone_number', 'published', 'rating')
     list_filter = ('published', 'city', 'rating')
     search_fields = ('name', 'city', 'email', 'phone_number')
-    readonly_fields = ('rating', 'user')
+    readonly_fields = ('rating', 'owner')
     inlines = [ShelterPhotoInline, MoneyReportInline, AnimalInline]
-
 
     def save_model(self, request, obj, form, change):
         """
         When creating a new object, set the author field.
         """
         if not change:
-            obj.user = request.user
+            obj.owner = request.user
         obj.save()
 
 
-# @admin.register(Animal)
 class AnimalAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('name', 'shelter', 'animal_type', 'breed', 'age', 'gender')
     list_filter = ('shelter', 'animal_type', 'breed', 'gender')
@@ -55,7 +52,6 @@ class AnimalAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     inlines = [AnimalPhotoInline]
 
 
-# @admin.register(AnimalPhoto)
 class AnimalPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('animal', 'photo_preview', 'photo')
     list_filter = ('animal',)
@@ -68,7 +64,6 @@ class AnimalPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     photo_preview.short_description = "Превью"
 
 
-# @admin.register(ShelterPhoto)
 class ShelterPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('shelter', 'photo_preview', 'photo')
     list_filter = ('shelter',)
@@ -81,7 +76,6 @@ class ShelterPhotoAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     photo_preview.short_description = "Превью"
 
 
-# @admin.register(MoneyReport)
 class MoneyReportAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
     list_display = ('shelter', 'title', 'amount_spent', 'photo')
     list_filter = ('shelter',)
