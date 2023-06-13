@@ -1,7 +1,12 @@
 <template>
   <div class="shelter-list">
     <h1>Приюты для животных</h1>
-    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText" @input="debouncedGetShelters"></el-input>
+    <div class="shelter-manage-buttons">
+      <!-- TODO add my shelter page -->
+<!--      <el-button type="default" @click="getShelters">Мои приюты</el-button>-->
+      <el-button type="primary" @click="addShelter">Добавить приют</el-button>
+    </div>
+    <el-input class="shelter-search" size="large" placeholder="Поиск..." v-model="searchText" @input="debouncedGetShelters" clearable></el-input>
 
     <div class="main-content">
       <div class="filters">
@@ -191,6 +196,9 @@ export default {
     goToShelter(id) {
       this.$router.push(`/shelter/${id}`);
     },
+    addShelter(){
+      this.$router.push(`/shelters/add`);
+    }
   },
   watch: {
     perPage: {
@@ -208,6 +216,12 @@ export default {
 </script>
 
 <style scoped>
+.shelter-manage-buttons {
+  position: absolute;
+  right: 0;
+  top: 10px;
+}
+
 .shelter-search{
   padding: 1rem 0;
 }
@@ -215,6 +229,7 @@ export default {
 .shelter-list {
   width: 80%;
   margin: 0 auto;
+  position: relative;
 }
 .main-content {
   display: flex;
@@ -228,6 +243,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding-bottom: 5rem;
+  margin-bottom: 1rem;
 }
 
 .filter-label{

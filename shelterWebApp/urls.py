@@ -38,6 +38,8 @@ urlpatterns = [
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
+    path('api/v1/user-details/', views.UserDetailsView.as_view(), name='user-details'),
+
     path('api/v1/shelters/', views.ShelterListCreateView.as_view(), name='shelter-list-create'),
     path('api/v1/shelters/<int:pk>/', views.ShelterRetrieveUpdateDestroyView.as_view(), name='shelter-retrieve-update-destroy'),
     path('api/v1/shelters/cities/', views.unique_cities, name='unique-cities'),

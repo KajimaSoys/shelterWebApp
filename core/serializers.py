@@ -26,6 +26,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+
 class AnimalPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnimalPhoto

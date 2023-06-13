@@ -11,10 +11,19 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 
 # project
 from .models import Shelter, Animal, AnimalPhoto, ShelterPhoto, MoneyReport
-from .serializers import ShelterSerializer, ShelterListSerializer, AnimalSerializer, AnimalPhotoSerializer, ShelterPhotoSerializer, MoneyReportSerializer, RegisterSerializer
+from .serializers import \
+    (ShelterSerializer,
+     ShelterListSerializer,
+     AnimalSerializer,
+     AnimalPhotoSerializer,
+     ShelterPhotoSerializer,
+     MoneyReportSerializer,
+     RegisterSerializer,
+     UserSerializer)
 from .filters import ShelterFilter
 
 
@@ -41,6 +50,18 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 
+class UserDetailsView(APIView):
+    """
+    View to provide user details
+    """
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request):
+        user = User.objects.get(username=request.user.username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+
 class IsShelterOwner(permissions.BasePermission):
     """Проверка является ли пользователь владельцем приюта"""
     def has_object_permission(self, request, view, obj):
@@ -51,7 +72,7 @@ class IsShelterOwner(permissions.BasePermission):
 
 class ShelterListCreateView(generics.ListCreateAPIView):
     """Вью для получения и создания приютов"""
-    queryset = Shelter.objects.all()
+    queryset = Shelter.objects.filter(published=True)
     serializer_class = ShelterListSerializer
     search_fields = ['name', 'city', 'email', 'phone_number']
 
@@ -62,7 +83,7 @@ class ShelterListCreateView(generics.ListCreateAPIView):
     ordering = ['order']
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(owner=self.request.user)
 
     def get_permissions(self):
         if self.request.method in ['POST']:

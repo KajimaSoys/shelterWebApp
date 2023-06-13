@@ -1,16 +1,60 @@
 <template>
   <div class="animal-list" v-if="animals.length > 0">
     <h1>Животные приюта</h1>
-    <el-input class="animal-search" size="large" placeholder="Поиск.." v-model="searchText"></el-input>
+    <el-input class="animal-search" size="large" placeholder="Поиск.." v-model="searchText" clearable></el-input>
 
     <div class="main-content">
       <div class="filters">
         <h2>Фильтры</h2>
-        <!-- TODO Add filter components here -->
-        <div style="color: gray">Скоро..</div>
+        <!-- Animal Type Filter -->
+        <div>
+          <label class="filter-label">Тип животного:</label>
+          <div style="margin-top: 1rem">
+            <el-select v-model="selectedAnimalType" placeholder="Выберите животное" clearable>
+              <el-option
+                v-for="type in animalTypeList"
+                :key="type"
+                :label="type"
+                :value="type">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+
+        <!-- Breed Filter -->
+        <div>
+          <label class="filter-label">Порода:</label>
+          <div style="margin-top: 1rem">
+            <el-select v-model="selectedBreed" placeholder="Выберите породу" clearable>
+              <el-option
+                v-for="breed in breedList"
+                :key="breed"
+                :label="breed"
+                :value="breed">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+
+        <!-- Gender Filter -->
+        <div>
+          <label class="filter-label">Пол:</label>
+          <div style="margin-top: 1rem">
+            <el-select v-model="selectedGender" placeholder="Выберите пол" clearable>
+              <el-option
+                v-for="gender in genderList"
+                :key="gender"
+                :label="gender"
+                :value="gender">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+
+<!--        <el-button type="primary" @click="getAnimals">Apply</el-button>-->
       </div>
 
-      <div class="animals">
+      <div class="animals" v-if="paginatedAnimals.length">
         <div class="pagination">
           <el-button @click="prevPage" :disabled="currentPage === 1">Предыдущая</el-button>
           <el-button disabled>{{ currentPage }}</el-button>
@@ -42,6 +86,9 @@
           <el-button @click="nextPage" :disabled="currentPage === totalPages">Следующая</el-button>
         </div>
       </div>
+      <div v-else class="animals">
+        Животные не найдены. Попробуйте изменить критерии поиска.
+      </div>
     </div>
   </div>
 
@@ -51,6 +98,7 @@
 </template>
 
 <script>
+
 export default {
   name: "AnimalList",
   props: {
@@ -64,12 +112,43 @@ export default {
       searchText: '',
       currentPage: 1,
       perPage: 10,
+      selectedAnimalType: '',
+      selectedBreed: '',
+      selectedGender: '',
     };
   },
   computed: {
     filteredAnimals() {
-      if (!this.searchText) return this.animals;
-      return this.animals.filter(animal => animal.name.toLowerCase().includes(this.searchText.toLowerCase()));
+      // if (!this.searchText) return this.animals;
+      // return this.animals.filter(animal => animal.name.toLowerCase().includes(this.searchText.toLowerCase()));
+      let result = this.animals;
+
+      if (this.searchText) {
+        result = result.filter(animal => animal.name.toLowerCase().includes(this.searchText.toLowerCase()));
+      }
+
+      if (this.selectedAnimalType) {
+        result = result.filter(animal => animal.animal_type === this.selectedAnimalType);
+      }
+
+      if (this.selectedBreed) {
+        result = result.filter(animal => animal.breed === this.selectedBreed);
+      }
+
+      if (this.selectedGender) {
+        result = result.filter(animal => animal.gender === this.selectedGender);
+      }
+
+      return result;
+    },
+    animalTypeList() {
+      return [...new Set(this.animals.map(animal => animal.animal_type))];
+    },
+    breedList() {
+      return [...new Set(this.animals.map(animal => animal.breed))];
+    },
+    genderList() {
+      return [...new Set(this.animals.map(animal => animal.gender))];
     },
     totalPages() {
       return Math.ceil(this.filteredAnimals.length / this.perPage);
@@ -115,6 +194,11 @@ export default {
   flex: 1;
   border-right: 1px solid #ccc;
   padding-right: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 5rem;
+  margin-bottom: 1rem;
 }
 .animals {
   flex: 3;
