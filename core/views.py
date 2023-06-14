@@ -65,9 +65,9 @@ class UserDetailsView(APIView):
 class IsShelterOwner(permissions.BasePermission):
     """Проверка является ли пользователь владельцем приюта"""
     def has_object_permission(self, request, view, obj):
-        if isinstance(obj, Animal) or isinstance(obj, AnimalPhoto) or isinstance(obj, MoneyReport):
-            return request.user == obj.shelter.user
-        return request.user == obj.user
+        if isinstance(obj, Animal) or isinstance(obj, AnimalPhoto) or isinstance(obj, MoneyReport) or isinstance(obj, ShelterPhoto):
+            return request.user == obj.shelter.owner
+        return request.user == obj.owner
 
 
 class ShelterListCreateView(generics.ListCreateAPIView):
@@ -113,7 +113,7 @@ class ShelterRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 def unique_cities(request):
     """Функция для получения уникальных городов"""
     with connection.cursor() as cursor:
-        cursor.execute("SELECT DISTINCT city FROM core_shelter")
+        cursor.execute("SELECT DISTINCT city FROM core_shelter WHERE published='True'")
         cities = [row[0] for row in cursor.fetchall()]
     return JsonResponse(sorted(cities), safe=False)
 

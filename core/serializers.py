@@ -36,7 +36,8 @@ class AnimalPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnimalPhoto
         fields = ('id',
-                  'photo')
+                  'photo',
+                  'animal',)
 
 
 class ShelterPhotoSerializer(serializers.ModelSerializer):
@@ -54,12 +55,13 @@ class MoneyReportSerializer(serializers.ModelSerializer):
                   'title',
                   'description',
                   'amount_spent',
-                  'photo')
+                  'photo',
+                  'shelter',)
 
 
 class AnimalSerializer(serializers.ModelSerializer):
     photos = AnimalPhotoSerializer(many=True, read_only=True)
-    gender = serializers.ChoiceField(choices=gender_choices, source='get_gender_display')
+    gender = serializers.ChoiceField(choices=gender_choices)
 
     class Meta:
         model = Animal
@@ -111,6 +113,7 @@ class ShelterListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shelter
         fields = ('id',
+                  'owner',
                   'name',
                   'city',
                   'street',

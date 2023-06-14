@@ -1,6 +1,10 @@
 <template>
   <div class="reports-list" v-if="moneyReports.length > 0">
     <h1>Расходы на уход за животными</h1>
+    <div class="report-manage-buttons">
+      <el-button type="primary" @click="addReport">Добавить отчет</el-button>
+    </div>
+
     <div class="main-content">
       <div class="reports">
         <div class="pagination">
@@ -34,8 +38,11 @@
     </div>
   </div>
 
-  <div class="reports-list" v-else>
+  <div class="reports-list" v-else style="margin-bottom: 5rem">
     <h1>Приют пока не предоставил информацию о расходах..</h1>
+    <div>
+      <el-button type="primary" @click="addReport">Добавить отчет</el-button>
+    </div>
   </div>
 </template>
 
@@ -75,14 +82,24 @@ export default {
         this.currentPage--;
       }
     },
+    addReport(){
+      this.$router.push(`/shelter/${this.$route.params.id}/funds/add`);
+    },
   }
 }
 </script>
 
 <style scoped>
+.report-manage-buttons {
+  position: absolute;
+  right: 0;
+  top: 10px;
+}
+
 .reports-list {
   width: 80%;
   margin: 5rem auto 0;
+  position: relative;
 }
 .main-content {
   display: flex;

@@ -1,6 +1,10 @@
 <template>
   <div class="animal-list" v-if="animals.length > 0">
     <h1>Животные приюта</h1>
+    <div class="animal-manage-buttons">
+      <el-button type="primary" @click="addAnimal">Добавить животное</el-button>
+    </div>
+
     <el-input class="animal-search" size="large" placeholder="Поиск.." v-model="searchText" clearable></el-input>
 
     <div class="main-content">
@@ -44,7 +48,7 @@
               <el-option
                 v-for="gender in genderList"
                 :key="gender"
-                :label="gender"
+                :label="genderChoices[gender]"
                 :value="gender">
               </el-option>
             </el-select>
@@ -94,6 +98,9 @@
 
   <div class="animal-list" v-else>
     <h1>Приют пока не добавил животных..</h1>
+    <div>
+      <el-button type="primary" @click="addAnimal">Добавить животное</el-button>
+    </div>
   </div>
 </template>
 
@@ -115,12 +122,16 @@ export default {
       selectedAnimalType: '',
       selectedBreed: '',
       selectedGender: '',
+
+      genderChoices: {
+        'male': 'Самец',
+        'female': 'Самка',
+        'unknown': 'Неизвестно',
+      }
     };
   },
   computed: {
     filteredAnimals() {
-      // if (!this.searchText) return this.animals;
-      // return this.animals.filter(animal => animal.name.toLowerCase().includes(this.searchText.toLowerCase()));
       let result = this.animals;
 
       if (this.searchText) {
@@ -145,7 +156,7 @@ export default {
       return [...new Set(this.animals.map(animal => animal.animal_type))];
     },
     breedList() {
-      return [...new Set(this.animals.map(animal => animal.breed))];
+      return [...new Set(this.animals.map(animal => animal.breed).filter(Boolean))];
     },
     genderList() {
       return [...new Set(this.animals.map(animal => animal.gender))];
@@ -173,11 +184,20 @@ export default {
     goToAnimal(id, animalId) {
       this.$router.push(`/shelter/${id}/animal/${animalId}`);
     },
+    addAnimal(){
+      this.$router.push(`/shelter/${this.$route.params.id}/animal/add`);
+    }
   },
 };
 </script>
 
 <style scoped>
+.animal-manage-buttons {
+  position: absolute;
+  right: 0;
+  top: 10px;
+}
+
 .animal-search{
   padding: 1rem 0;
 }
@@ -185,6 +205,7 @@ export default {
 .animal-list {
   width: 80%;
   margin: 5rem auto 0;
+  position: relative;
 }
 .main-content {
   display: flex;

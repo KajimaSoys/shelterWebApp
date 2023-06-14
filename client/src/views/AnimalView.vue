@@ -30,15 +30,19 @@ export default {
     this.fetchAnimal();
   },
   methods: {
-    fetchAnimal() {
-      axios.get(`api/v1/animals/${this.$route.params['animalId']}/`)
-        .then(response => {
-          this.animal = response.data;
-        })
-        .catch(error => {
+    async fetchAnimal() {
+      try {
+        const response = await axios.get(`api/v1/animals/${this.$route.params['animalId']}/`);
+        this.animal = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.fetchAnimal();
+        } else {
           console.error(error);
-        })
-    }
+        }
+      }
+    },
   }
 };
 </script>

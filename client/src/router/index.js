@@ -67,13 +67,13 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/shelter/:id/funds',
+      path: '/shelter/:id/funds/add',
       name: 'AddFunds',
       component: AddFundraisingView,
       props: true,
     },
     {
-      path: '/shelter/:id/funds/edit/:reportId',
+      path: '/shelter/:id/funds/:reportId/edit',
       name: 'EditFunds',
       component: EditFundraisingView,
       props: true,

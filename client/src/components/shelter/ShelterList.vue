@@ -1,7 +1,7 @@
 <template>
   <div class="shelter-list">
     <h1>Приюты для животных</h1>
-    <div class="shelter-manage-buttons">
+    <div  v-if="isAuthenticated" class="shelter-manage-buttons">
       <!-- TODO add my shelter page -->
 <!--      <el-button type="default" @click="getShelters">Мои приюты</el-button>-->
       <el-button type="primary" @click="addShelter">Добавить приют</el-button>
@@ -63,7 +63,21 @@
             <img v-else src="/no-photo.gif">
           </div>
           <div class="shelter-card-content">
-            <h2>{{ shelter.name }}</h2>
+            <h2>
+              {{ shelter.name }}
+              <el-button v-if="isShelterOwner(shelter)"  @click.stop="editShelter(shelter.id)">
+                <el-icon>
+                  <Edit />
+                </el-icon>
+              </el-button>
+              <el-button v-if="isShelterOwner(shelter)" @click.stop="deleteShelter(shelter.id)">
+                <el-icon>
+                  <Delete />
+                </el-icon>
+              </el-button>
+            </h2>
+
+            <div v-if="isShelterOwner(shelter)" style="color: gray; font-size: 0.8rem">Ваш приют</div>
 
             <div class="shelter-card-info">
               <div><b>Адрес:</b> {{ shelter.city }}, {{ shelter.street }}{{ shelter.house !== '' ? `, ${shelter.house}`: ''}}</div>
@@ -107,8 +121,6 @@
         Приюты не найдены. Попробуйте изменить критерии поиска.
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -116,9 +128,14 @@
 import axios from "axios";
 import _ from "lodash";
 import {ElNotification} from "element-plus";
+import { Delete, Edit } from '@element-plus/icons-vue'
 
 export default {
   name: "ShelterList",
+  components: {
+    Delete,
+    Edit
+  },
   data() {
     return {
       shelters: [],
@@ -130,14 +147,63 @@ export default {
       selectedCity: '',
       selectedRating: [0,5],
 
+      isAuthenticated: false,
+      user: null,
+
       debouncedGetShelters: _.debounce(this.getShelters, 300),
     };
   },
   methods: {
-    getShelters() {
-      // TODO Нужно запрашивать только основную информацию приютов, чтобы сэкономить время при запросе
-      axios
-        .get("/api/v1/shelters/", {
+    async getUserDetails() {
+      try {
+        const response = await axios.get("/api/v1/user-details/");
+        this.user = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.getUserDetails();
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при получении данных пользователя',
+            type: 'error',
+          });
+        }
+      }
+    },
+    isShelterOwner(shelter) {
+      return this.user && shelter.owner === this.user.id;
+    },
+    editShelter(id) {
+      this.$router.push(`/shelters/${id}/edit`);
+    },
+    async deleteShelter(id) {
+      try {
+        await this.$confirm('Вы действительно хотите удалить приют?', 'Внимание', {
+          confirmButtonText: 'Да',
+          cancelButtonText: 'Нет',
+          type: 'warning'
+        });
+        await axios.delete(`/api/v1/shelters/${id}/`);
+        await this.getShelters();
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.deleteShelter(id);
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при удалении приюта',
+            type: 'error',
+          });
+        }
+      }
+    },
+    async getShelters() {
+      try {
+        const response = await axios.get("/api/v1/shelters/", {
           params: {
             page: this.currentPage,
             per_page: this.perPage,
@@ -146,34 +212,41 @@ export default {
             rating_min: this.selectedRating[0],
             rating_max: this.selectedRating[1],
           }
-        })
-        .then(response => {
-          this.shelters = response.data.results;
-          this.totalPages = response.data.total_pages;
-        })
-        .catch(error => {
+        });
+
+        this.shelters = response.data.results;
+        this.totalPages = response.data.total_pages;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.getShelters();
+        } else {
           console.error(error);
           ElNotification({
             title: 'Ошибка!',
             message: 'Произошла ошибка при получении списка приютов',
             type: 'error',
-          })
-        });
+          });
+        }
+      }
     },
-    getCities() {
-      axios
-        .get("/api/v1/shelters/cities/")
-        .then(response => {
-          this.cities = response.data;
-        })
-        .catch(error => {
+    async getCities() {
+      try {
+        const response = await axios.get("/api/v1/shelters/cities/");
+        this.cities = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.getCities();
+        } else {
           console.error(error);
           ElNotification({
             title: 'Ошибка!',
             message: 'Произошла ошибка при получении списка городов для фильтра',
             type: 'error',
-          })
-        });
+          });
+        }
+      }
     },
     prevPage() {
       if (this.currentPage > 1) {
@@ -206,9 +279,16 @@ export default {
         this.changePerPage();
       },
       immediate: true
+    },
+    '$route': function() {
+      this.isAuthenticated = !!localStorage.getItem('access');
     }
   },
   created() {
+    this.isAuthenticated = !!localStorage.getItem('access');
+    if (this.isAuthenticated){
+      this.getUserDetails();
+    }
     this.getShelters();
     this.getCities();
   }
@@ -291,6 +371,7 @@ export default {
 
 .shelter-card-content h2{
   margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .shelter-card-info{

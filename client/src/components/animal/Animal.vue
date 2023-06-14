@@ -50,7 +50,7 @@
 
         <div>Вес (граммы): {{ animal.weight }}</div>
 
-        <div>Состояние здоровья:: {{ animal.health_status }}</div>
+        <div>Состояние здоровья: {{ animal.health_status }}</div>
       </div>
     </div>
   </div>

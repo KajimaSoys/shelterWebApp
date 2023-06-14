@@ -6,7 +6,6 @@
       @submit.native.prevent="onSubmit"
       label-width="120px"
       :rules="rules"
-
       status-icon
       ref="shelterDataRef"
   >
@@ -193,13 +192,20 @@ export default {
     },
   },
   created() {
-    if (!localStorage.getItem('access')) {
-      this.$router.push('/login') // or whatever your login route is
-    } else {
-      this.form.owner = this.getOwnerId();
-    }
+    this.init()
   },
   methods: {
+    async init() {
+      if (!localStorage.getItem('access')) {
+        this.$router.push('/login');
+      } else {
+        this.form.owner = await this.getOwnerId();
+      }
+    },
+    async getOwnerId() {
+      const userDetails = await this.getUserDetails();
+      return userDetails ? userDetails.id : null;
+    },
     async getUserDetails() {
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('access')}`;
       try {
@@ -212,10 +218,6 @@ export default {
         }
         console.log(error);
       }
-    },
-    async getOwnerId() {
-      const userDetails = await this.getUserDetails();
-      return userDetails ? userDetails.id : null;
     },
     handlePhotosChange(file, fileList) {
       this.fileList = fileList;
@@ -240,7 +242,7 @@ export default {
             if (response.data) {
               await this.uploadPhotos(response.data.id); // Call the upload function here
             }
-            // this.$router.push('/shelters')
+            this.$router.push('/shelters')
           } catch (error) {
             if (error.response && error.response.status === 401) {
               await this.$refreshToken();
@@ -258,12 +260,9 @@ export default {
     async uploadPhotos(shelterId) {
       for (let file of this.fileList) {
         let formData = new FormData();
-        console.log(shelterId)
-        formData.append('shelter', shelterId); // Assuming the server is expecting 'shelter' as the key for the shelter id
-        formData.append('photo', file.raw); // Assuming the server is expecting 'photo' as the key for the file
-        for (var pair of formData.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]);
-        }
+        // console.log(shelterId)
+        formData.append('shelter', shelterId);
+        formData.append('photo', file.raw);
         try {
           await axios.post(`${this.backendURL}/api/v1/shelter_photos/`, formData, {
             headers: {

@@ -35,15 +35,19 @@ export default {
     this.fetchShelter();
   },
   methods: {
-    fetchShelter() {
-      axios.get(`api/v1/shelters/${this.$route.params.id}/`)
-        .then(response => {
-          this.shelter = response.data;
-        })
-        .catch(error => {
+    async fetchShelter() {
+      try {
+        const response = await axios.get(`api/v1/shelters/${this.$route.params.id}/`);
+        this.shelter = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.fetchShelter();
+        } else {
           console.error(error);
-        })
-    }
+        }
+      }
+    },
   }
 };
 </script>
