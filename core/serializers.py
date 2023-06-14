@@ -43,7 +43,8 @@ class ShelterPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShelterPhoto
         fields = ('id',
-                  'photo')
+                  'photo',
+                  'shelter',)
 
 
 class MoneyReportSerializer(serializers.ModelSerializer):

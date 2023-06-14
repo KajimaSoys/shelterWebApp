@@ -106,6 +106,20 @@
       ></el-input>
     </el-form-item>
 
+    <el-form-item label="Фото приюта">
+      <el-upload
+        :action="uploadAction"
+        multiple
+        :auto-upload="false"
+        :on-change="handlePhotosChange"
+        :file-list="fileList"
+        :headers="headers"
+        ref="upload"
+      >
+        <el-button slot="trigger" size="small" type="default">Выбрать</el-button>
+      </el-upload>
+    </el-form-item>
+
 
     <el-form-item class="submit-button">
       <el-button type="primary" @click="onSubmit">Отправить на проверку</el-button>
@@ -121,6 +135,7 @@ import {mask} from 'vue-the-mask'
 export default {
   name: "AddShelterForm",
   directives: {mask},
+  inject: ['backendURL'],
   data() {
     return {
       form: {
@@ -137,6 +152,7 @@ export default {
         phone_number: '',
         email: '',
       },
+      fileList: [],
       rules: {
         name: {
           required: true,
@@ -166,6 +182,16 @@ export default {
       },
     }
   },
+  computed: {
+    uploadAction() {
+      return `${this.backendURL}/api/v1/shelter_photos/`;
+    },
+    headers() {
+      return {
+        Authorization: `Bearer ${localStorage.getItem('access')}`,
+      };
+    },
+  },
   created() {
     if (!localStorage.getItem('access')) {
       this.$router.push('/login') // or whatever your login route is
@@ -191,14 +217,30 @@ export default {
       const userDetails = await this.getUserDetails();
       return userDetails ? userDetails.id : null;
     },
+    handlePhotosChange(file, fileList) {
+      this.fileList = fileList;
+    },
+    submitUpload() {
+      this.$refs.upload.submit(); // here 'upload' is the ref attached to the el-upload in your template
+    },
     async onSubmit() {
       this.$refs.shelterDataRef.validate(async (valid) => {
         if (valid) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('access')}`;
+
+          let formData = new FormData();
+
+          for (let key in this.form) {
+            formData.append(key, this.form[key]);
+          }
+
           try {
-            const response = await axios.post('/api/v1/shelters/', this.form);
+            const response = await axios.post('/api/v1/shelters/', formData);
             console.log(response.data);
-            this.$router.push('/shelters')
+            if (response.data) {
+              await this.uploadPhotos(response.data.id); // Call the upload function here
+            }
+            // this.$router.push('/shelters')
           } catch (error) {
             if (error.response && error.response.status === 401) {
               await this.$refreshToken();
@@ -211,6 +253,28 @@ export default {
           return false;
         }
       });
+    },
+
+    async uploadPhotos(shelterId) {
+      for (let file of this.fileList) {
+        let formData = new FormData();
+        console.log(shelterId)
+        formData.append('shelter', shelterId); // Assuming the server is expecting 'shelter' as the key for the shelter id
+        formData.append('photo', file.raw); // Assuming the server is expecting 'photo' as the key for the file
+        for (var pair of formData.entries()) {
+            console.log(pair[0]+ ', ' + pair[1]);
+        }
+        try {
+          await axios.post(`${this.backendURL}/api/v1/shelter_photos/`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': `Bearer ${localStorage.getItem('access')}`,
+            }
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
   }
 }
