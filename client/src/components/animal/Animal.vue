@@ -1,6 +1,18 @@
 <template>
   <div class="animal">
-    <h1>{{ animal.name }}</h1>
+    <h1>
+      {{ animal.name }}
+      <el-button v-if="isShelterOwner"  @click.stop="editAnimal(animal.shelter, animal.id)">
+        <el-icon>
+          <Edit />
+        </el-icon>
+      </el-button>
+      <el-button v-if="isShelterOwner" @click.stop="deleteAnimal(animal.shelter, animal.id)">
+        <el-icon>
+          <Delete />
+        </el-icon>
+      </el-button>
+    </h1>
     <div class="animal-content">
       <div class="animal-content-images">
         <swiper
@@ -46,7 +58,7 @@
 
         <div>Возраст (месяцы): {{ animal.age }}</div>
 
-        <div>Пол: {{ animal.gender }}</div>
+        <div>Пол: {{ genderChoices[animal.gender] }}</div>
 
         <div>Вес (граммы): {{ animal.weight }}</div>
 
@@ -62,6 +74,9 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import {Delete, Edit} from "@element-plus/icons-vue";
+import axios from "axios";
+import {ElNotification} from "element-plus";
 
 export default {
   name: "Animal",
@@ -73,18 +88,81 @@ export default {
   },
   components: {
     Swiper,
-    SwiperSlide
+    SwiperSlide,
+    Delete,
+    Edit
   },
   data () {
     return{
+      genderChoices: {
+        'male': 'Самец',
+        'female': 'Самка',
+        'unknown': 'Неизвестно',
+      },
+      user:null,
+
       modules: [Navigation, Pagination, A11y],
       slidesPerView: 1,
       navigation: { nextEl: '.swiper-button-next-1', prevEl: '.swiper-button-prev-1' },
       pagination: { el: '.swiper-pagination-1', clickable: true, bulletClass: 'swiper-pagination-bullet', bulletActiveClass: 'swiper-pagination-bullet-active' },
     }
   },
+  created() {
+    this.isAuthenticated = !!localStorage.getItem('access');
+    if (this.isAuthenticated){
+      this.getUserDetails();
+    }
+  },
+  computed: {
+    isShelterOwner() {
+      return this.user && this.animal.shelter_owner === this.user.id;
+    },
+  },
   methods: {
-
+    async getUserDetails() {
+      try {
+        const response = await axios.get("/api/v1/user-details/");
+        this.user = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.getUserDetails();
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при получении данных пользователя',
+            type: 'error',
+          });
+        }
+      }
+    },
+    editAnimal(id, animalId) {
+      this.$router.push(`/shelter/${id}/animal/${animalId}/edit`);
+    },
+    async deleteAnimal(id, animalId) {
+      try {
+        await this.$confirm('Вы действительно хотите удалить животное?', 'Внимание', {
+          confirmButtonText: 'Да',
+          cancelButtonText: 'Нет',
+          type: 'warning'
+        });
+        await axios.delete(`/api/v1/animals/${animalId}/`);
+        this.$router.push(`/shelter/${id}`)
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.deleteShelter(id);
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при удалении животного',
+            type: 'error',
+          });
+        }
+      }
+    },
   }
 };
 </script>

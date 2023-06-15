@@ -1,6 +1,18 @@
 <template>
   <div class="shelter">
-    <h1>{{ shelter.name }}</h1>
+    <h1>
+      {{ shelter.name }}
+      <el-button v-if="owner"  @click.stop="editShelter(shelter.id)">
+        <el-icon>
+          <Edit />
+        </el-icon>
+      </el-button>
+      <el-button v-if="owner" @click.stop="deleteShelter(shelter.id)">
+        <el-icon>
+          <Delete />
+        </el-icon>
+      </el-button>
+    </h1>
     <div class="shelter-content">
       <div class="shelter-content-images">
         <swiper
@@ -92,18 +104,24 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import axios from "axios";
+import {ElNotification} from "element-plus";
+import { Delete, Edit } from '@element-plus/icons-vue'
 
 export default {
   name: "ShelterInfo",
   props: {
     shelter: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
+    owner: {}
   },
   components: {
     Swiper,
-    SwiperSlide
+    SwiperSlide,
+    Delete,
+    Edit
   },
   data () {
     return{
@@ -112,6 +130,34 @@ export default {
       navigation: { nextEl: '.swiper-button-next-1', prevEl: '.swiper-button-prev-1' },
       pagination: { el: '.swiper-pagination-1', clickable: true, bulletClass: 'swiper-pagination-bullet', bulletActiveClass: 'swiper-pagination-bullet-active' },
     }
+  },
+  methods: {
+    editShelter(id) {
+      this.$router.push(`/shelters/${id}/edit`);
+    },
+    async deleteShelter(id) {
+      try {
+        await this.$confirm('Вы действительно хотите удалить приют?', 'Внимание', {
+          confirmButtonText: 'Да',
+          cancelButtonText: 'Нет',
+          type: 'warning'
+        });
+        await axios.delete(`/api/v1/shelters/${id}/`);
+        this.$router.push(`/shelters`);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.deleteShelter(id);
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при удалении приюта',
+            type: 'error',
+          });
+        }
+      }
+    },
   }
 };
 </script>

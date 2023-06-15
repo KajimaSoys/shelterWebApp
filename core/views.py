@@ -65,8 +65,10 @@ class UserDetailsView(APIView):
 class IsShelterOwner(permissions.BasePermission):
     """Проверка является ли пользователь владельцем приюта"""
     def has_object_permission(self, request, view, obj):
-        if isinstance(obj, Animal) or isinstance(obj, AnimalPhoto) or isinstance(obj, MoneyReport) or isinstance(obj, ShelterPhoto):
+        if isinstance(obj, Animal) or isinstance(obj, MoneyReport) or isinstance(obj, ShelterPhoto):
             return request.user == obj.shelter.owner
+        if isinstance(obj, AnimalPhoto):
+            return request.user == obj.animal.shelter.owner
         return request.user == obj.owner
 
 

@@ -1,7 +1,7 @@
 <template>
   <div class="reports-list" v-if="moneyReports.length > 0">
     <h1>Расходы на уход за животными</h1>
-    <div class="report-manage-buttons">
+    <div class="report-manage-buttons" v-if="owner">
       <el-button type="primary" @click="addReport">Добавить отчет</el-button>
     </div>
 
@@ -19,7 +19,19 @@
           </div>
 
           <div class="report-card-content">
-            <h2 class="animal-card-title">{{ report.title }}</h2>
+            <h2 class="report-card-title">
+              {{ report.title }}
+              <el-button v-if="owner"  @click.stop="editReport(report.shelter, report.id)">
+                <el-icon>
+                  <Edit />
+                </el-icon>
+              </el-button>
+              <el-button v-if="owner" @click.stop="deleteReport(report.id)">
+                <el-icon>
+                  <Delete />
+                </el-icon>
+              </el-button>
+            </h2>
             <div class="report-card-info">
               <div>{{ report.description }}</div>
               <div>Cумма: {{ report.amount_spent }} руб.</div>
@@ -40,21 +52,33 @@
 
   <div class="reports-list" v-else style="margin-bottom: 5rem">
     <h1>Приют пока не предоставил информацию о расходах..</h1>
-    <div>
+    <div v-if="owner">
       <el-button type="primary" @click="addReport">Добавить отчет</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import {Delete, Edit} from "@element-plus/icons-vue";
+import axios from "axios";
+import {ElNotification} from "element-plus";
+
 export default {
   name: "FundsSpent",
   props: {
     moneyReports: {
       type: Array,
       required: true
-    }
+    },
+    owner: {},
   },
+  components: {
+    Delete,
+    Edit,
+  },
+  emits: [
+    'reFetchShelter',
+  ],
   data(){
     return{
       currentPage: 1,
@@ -84,6 +108,32 @@ export default {
     },
     addReport(){
       this.$router.push(`/shelter/${this.$route.params.id}/funds/add`);
+    },
+    editReport(id, reportId) {
+      this.$router.push(`/shelter/${id}/funds/${reportId}/edit`);
+    },
+    async deleteReport(reportId) {
+      try {
+        await this.$confirm('Вы действительно хотите удалить отчет?', 'Внимание', {
+          confirmButtonText: 'Да',
+          cancelButtonText: 'Нет',
+          type: 'warning'
+        });
+        await axios.delete(`/api/v1/money_reports/${reportId}/`);
+        this.$emit('reFetchShelter')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.deleteShelter(reportId);
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при удалении отчета',
+            type: 'error',
+          });
+        }
+      }
     },
   }
 }

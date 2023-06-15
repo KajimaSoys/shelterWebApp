@@ -49,6 +49,8 @@ class ShelterPhotoSerializer(serializers.ModelSerializer):
 
 
 class MoneyReportSerializer(serializers.ModelSerializer):
+    shelter_owner = serializers.ReadOnlyField(source='shelter.owner.id')
+
     class Meta:
         model = MoneyReport
         fields = ('id',
@@ -56,18 +58,21 @@ class MoneyReportSerializer(serializers.ModelSerializer):
                   'description',
                   'amount_spent',
                   'photo',
-                  'shelter',)
+                  'shelter',
+                  'shelter_owner',)
 
 
 class AnimalSerializer(serializers.ModelSerializer):
     photos = AnimalPhotoSerializer(many=True, read_only=True)
     gender = serializers.ChoiceField(choices=gender_choices)
+    shelter_owner = serializers.ReadOnlyField(source='shelter.owner.id')
 
     class Meta:
         model = Animal
         fields = ('id',
                   'name',
                   'shelter',
+                  'shelter_owner',
                   'animal_type',
                   'breed',
                   'age',

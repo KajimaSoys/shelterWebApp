@@ -1,7 +1,7 @@
 <template>
   <div class="animal-list" v-if="animals.length > 0">
     <h1>Животные приюта</h1>
-    <div class="animal-manage-buttons">
+    <div class="animal-manage-buttons" v-if="owner">
       <el-button type="primary" @click="addAnimal">Добавить животное</el-button>
     </div>
 
@@ -71,12 +71,24 @@
           </div>
 
           <div class="animal-card-content">
-            <h2 class="animal-card-title">{{ animal.name }}</h2>
+            <h2 class="animal-card-title">
+              {{ animal.name }}
+              <el-button v-if="owner"  @click.stop="editAnimal(animal.shelter, animal.id)">
+                <el-icon>
+                  <Edit />
+                </el-icon>
+              </el-button>
+              <el-button v-if="owner" @click.stop="deleteAnimal(animal.shelter, animal.id)">
+                <el-icon>
+                  <Delete />
+                </el-icon>
+              </el-button>
+            </h2>
             <div class="animal-card-info">
               <div>Вид: {{ animal.animal_type }}</div>
               <div>Порода: {{ animal.breed }}</div>
               <div>Возраст (месцяцы): {{ animal.age }}</div>
-              <div>Пол: {{ animal.gender }}</div>
+              <div>Пол: {{ genderChoices[animal.gender] }}</div>
               <div>Состояние здоровья: {{ animal.health_status }}</div>
               <div v-html="animal.description"></div>
             </div>
@@ -98,13 +110,16 @@
 
   <div class="animal-list" v-else>
     <h1>Приют пока не добавил животных..</h1>
-    <div>
+    <div v-if="owner">
       <el-button type="primary" @click="addAnimal">Добавить животное</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import {Delete, Edit} from "@element-plus/icons-vue";
+import axios from "axios";
+import {ElNotification} from "element-plus";
 
 export default {
   name: "AnimalList",
@@ -112,8 +127,16 @@ export default {
     animals: {
       type: Array,
       required: true
-    }
+    },
+    owner: {},
   },
+  components: {
+    Delete,
+    Edit,
+  },
+  emits: [
+    'reFetchShelter',
+  ],
   data() {
     return {
       searchText: '',
@@ -186,7 +209,33 @@ export default {
     },
     addAnimal(){
       this.$router.push(`/shelter/${this.$route.params.id}/animal/add`);
-    }
+    },
+    editAnimal(id, animalId) {
+      this.$router.push(`/shelter/${id}/animal/${animalId}/edit`);
+    },
+    async deleteAnimal(id, animalId) {
+      try {
+        await this.$confirm('Вы действительно хотите удалить животное?', 'Внимание', {
+          confirmButtonText: 'Да',
+          cancelButtonText: 'Нет',
+          type: 'warning'
+        });
+        await axios.delete(`/api/v1/animals/${animalId}/`);
+        this.$emit('reFetchShelter')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          await this.$refreshToken();
+          return this.deleteShelter(id);
+        } else {
+          console.error(error);
+          ElNotification({
+            title: 'Ошибка!',
+            message: 'Произошла ошибка при удалении животного',
+            type: 'error',
+          });
+        }
+      }
+    },
   },
 };
 </script>
