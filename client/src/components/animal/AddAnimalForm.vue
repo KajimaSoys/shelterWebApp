@@ -4,7 +4,7 @@
     <el-form
       :model="form"
       @submit.native.prevent="onSubmit"
-      label-width="160px"
+      label-width="260px"
       :rules="rules"
       status-icon
       ref="animalDataRef"
@@ -37,6 +37,39 @@
     <el-form-item label="Описание">
       <el-input v-model="form.description" clearable type="textarea" :rows="3"></el-input>
     </el-form-item>
+
+    <el-form-item label="Статус животного">
+      <el-select v-model="form.status" placeholder="Выберите текущий статус животного">
+        <el-option label="В приюте" value="in_shelter"></el-option>
+        <el-option label="Приютили" value="adopted"></el-option>
+        <el-option label="Отсутствует" value="missing"></el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="Начало пребывания в приюте">
+      <el-date-picker
+        v-model="form.created_at"
+        type="date"
+        placeholder="Выберите день"
+        :disabled-date="disabledDate"
+        :shortcuts="shortcuts"
+        value-format="DD.MM.YYYY"
+        format="DD.MM.YYYY"
+      />
+    </el-form-item>
+
+    <el-form-item label="Окончание пребывания в приюте">
+      <el-date-picker
+        v-model="form.left_at"
+        type="date"
+        placeholder="Выберите день"
+        :disabled-date="disabledDate"
+        :shortcuts="shortcuts"
+        value-format="DD.MM.YYYY"
+        format="DD.MM.YYYY"
+      />
+    </el-form-item>
+
     <el-form-item label="Фото животного">
       <el-upload
         :action="uploadAction"
@@ -77,6 +110,9 @@ export default {
         weight: '',
         health_status: '',
         description: '',
+        status: 'in_shelter',
+        created_at: new Date().toLocaleDateString(),
+        left_at: null,
       },
       fileList: [],
       rules: {
@@ -91,6 +127,28 @@ export default {
           trigger: "blur",
         },
       },
+      shortcuts: [
+        {
+          text: 'Сегодня',
+          value: new Date(),
+        },
+        {
+          text: 'Вчера',
+          value: () => {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24)
+            return date
+          },
+        },
+        {
+          text: 'Неделю назад',
+          value: () => {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+            return date
+          },
+        },
+      ]
     }
   },
   computed: {
@@ -141,8 +199,19 @@ export default {
 
           let formData = new FormData();
 
+          const transformDate = (dateStr) => {
+            const parts = dateStr.split(".");
+            return new Date(parts[2], parts[1] - 1, parts[0]).toISOString().split('T')[0];
+          }
+
           for (let key in this.form) {
-            formData.append(key, this.form[key]);
+            if (this.form[key] !== null) {
+              if (key === 'created_at' || key === 'left_at') {
+                formData.append(key, transformDate(this.form[key]));
+              } else {
+                formData.append(key, this.form[key]);
+              }
+            }
           }
 
           try {
@@ -161,6 +230,9 @@ export default {
                 weight: '',
                 health_status: '',
                 description: '',
+                status: 'in_shelter',
+                created_at: '',
+                left_at: '',
                 shelter: this.$route.params.id
               }
               this.fileList = []
@@ -200,6 +272,9 @@ export default {
           console.log(error);
         }
       }
+    },
+    disabledDate: (time) => {
+      return time.getTime() > Date.now();
     }
   }
 }

@@ -46,7 +46,7 @@ class ShelterAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
 
 
 class AnimalAdmin(SortableAdminMixin, nested_admin.NestedModelAdmin):
-    list_display = ('name', 'shelter', 'animal_type', 'breed', 'age', 'gender')
+    list_display = ('name', 'shelter', 'animal_type', 'breed', 'age', 'gender', 'status')
     list_filter = ('shelter', 'animal_type', 'breed', 'gender')
     search_fields = ('name', 'animal_type', 'breed')
     inlines = [AnimalPhotoInline]

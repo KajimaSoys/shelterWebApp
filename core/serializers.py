@@ -8,6 +8,12 @@ gender_choices = (
         ('unknown', 'Неизвестно'),
     )
 
+status_choices = (
+        ('in_shelter', 'В приюте'),
+        ('adopted', 'Приютили'),
+        ('missing', 'Отсутствует'),
+    )
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -66,6 +72,15 @@ class AnimalSerializer(serializers.ModelSerializer):
     photos = AnimalPhotoSerializer(many=True, read_only=True)
     gender = serializers.ChoiceField(choices=gender_choices)
     shelter_owner = serializers.ReadOnlyField(source='shelter.owner.id')
+    status = serializers.ChoiceField(choices=status_choices)
+    # created_at = serializers.SerializerMethodField()
+    # left_at = serializers.SerializerMethodField()
+    #
+    # def get_created_at(self, obj):
+    #     return obj.created_at.date()
+    #
+    # def get_left_at(self, obj):
+    #     return obj.left_at.date()
 
     class Meta:
         model = Animal
@@ -80,6 +95,9 @@ class AnimalSerializer(serializers.ModelSerializer):
                   'weight',
                   'health_status',
                   'description',
+                  'status',
+                  'created_at',
+                  'left_at',
                   'photos')
 
 
@@ -87,6 +105,10 @@ class ShelterSerializer(serializers.ModelSerializer):
     animals = AnimalSerializer(many=True, read_only=True)
     photos = ShelterPhotoSerializer(many=True, read_only=True)
     money_reports = MoneyReportSerializer(many=True, read_only=True)
+    efficiency_rating = serializers.SerializerMethodField()
+
+    def get_efficiency_rating(self, obj):
+        return obj.efficiency_rating()
 
     class Meta:
         model = Shelter
@@ -106,6 +128,7 @@ class ShelterSerializer(serializers.ModelSerializer):
                   'vk_link',
                   'phone_number',
                   'email',
+                  'efficiency_rating',
                   'animals',
                   'photos',
                   'money_reports')
@@ -114,6 +137,10 @@ class ShelterSerializer(serializers.ModelSerializer):
 class ShelterListSerializer(serializers.ModelSerializer):
     photos = ShelterPhotoSerializer(many=True, read_only=True)
     rounded_rating = serializers.IntegerField(read_only=True)
+    efficiency_rating = serializers.SerializerMethodField()
+
+    def get_efficiency_rating(self, obj):
+        return obj.efficiency_rating()
 
     class Meta:
         model = Shelter
@@ -129,4 +156,5 @@ class ShelterListSerializer(serializers.ModelSerializer):
                   'description',
                   'rating',
                   'rounded_rating',
+                  'efficiency_rating',
                   'photos',)

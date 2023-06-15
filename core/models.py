@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
 import math
+from django.utils import timezone
 
 
 class OrderedModel(models.Model):
@@ -39,6 +40,20 @@ class Shelter(OrderedModel):
     def rounded_rating(self):
         return math.ceil(self.rating)
 
+    def efficiency_rating(self):
+        left_animals = self.animals.filter(status__in=['adopted', 'missing'])
+
+        if not left_animals.exists():
+            return 0
+
+        total_stay_duration = sum(
+            (animal.left_at - animal.created_at).total_seconds()
+            for animal in left_animals
+        )
+        average_stay_duration = total_stay_duration / left_animals.count()
+        average_stay_duration_days = average_stay_duration / (60 * 60 * 24)
+        return average_stay_duration_days
+
     def __str__(self):
         return self.name
 
@@ -65,8 +80,23 @@ class Animal(OrderedModel):
     health_status = models.TextField(blank=True, verbose_name='Состояние здоровья')
     description = RichTextField(blank=True, verbose_name='Описание')
 
+    status_choices = (
+        ('in_shelter', 'В приюте'),
+        ('adopted', 'Приютили'),
+        ('missing', 'Отсутствует'),
+    )
+
+    status = models.CharField(max_length=255, choices=status_choices, default='in_shelter', verbose_name='Статус животного')
+    created_at = models.DateField(null=True, blank=True, verbose_name='Начало пребывания в приюте')
+    left_at = models.DateField(null=True, blank=True, verbose_name='Окончание пребывания в приюте')
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.status in ['adopted', 'missing'] and self.left_at is None:
+            self.left_at = timezone.now().date()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Животное'

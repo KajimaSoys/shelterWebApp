@@ -86,11 +86,14 @@
             </h2>
             <div class="animal-card-info">
               <div>Вид: {{ animal.animal_type }}</div>
-              <div>Порода: {{ animal.breed }}</div>
-              <div>Возраст (месцяцы): {{ animal.age }}</div>
-              <div>Пол: {{ genderChoices[animal.gender] }}</div>
-              <div>Состояние здоровья: {{ animal.health_status }}</div>
+              <div v-if="animal.breed">Порода: {{ animal.breed }}</div>
+              <div v-if="animal.age">Возраст (месцяцы): {{ animal.age }}</div>
+              <div v-if="animal.gender">Пол: {{ genderChoices[animal.gender] }}</div>
+              <div v-if="animal.health_status">Состояние здоровья: {{ animal.health_status }}</div>
               <div v-html="animal.description"></div>
+              <div>Статус: {{ statusChoices[animal.status] }}</div>
+              <div>Начало пребывания в приюте: {{ new Date(animal.created_at).toLocaleDateString() }}</div>
+              <div v-if="animal.left_at">Окончание пребывания в приюте: {{ new Date(animal.left_at).toLocaleDateString() }}</div>
             </div>
 
           </div>
@@ -150,6 +153,12 @@ export default {
         'male': 'Самец',
         'female': 'Самка',
         'unknown': 'Неизвестно',
+      },
+
+      statusChoices: {
+        'in_shelter': 'В приюте',
+        'adopted': 'Приютили',
+        'missing': 'Отсутствует',
       }
     };
   },

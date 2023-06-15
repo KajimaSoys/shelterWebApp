@@ -97,7 +97,8 @@
 
               <div v-html="shelter.description"></div>
 
-              <div style="font-size: 14px">Рейтинг: {{ shelter.rating }}</div>
+              <div style="font-size: 14px; margin-bottom: 0" title="Популярность среди пользователей">Пользовательский рейтинг: {{ shelter.rating }}</div>
+              <div style="font-size: 14px" title="Среднее время на передачу животное в добрые руки">Рейтинг эффективности (дни): {{ shelter.efficiency_rating }}</div>
             </div>
           </div>
         </el-card>

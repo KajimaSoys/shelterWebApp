@@ -50,9 +50,7 @@
       </div>
 
       <div class="animal-content-info">
-        <div v-html="animal.description"> </div>
-
-        <div>Тип животного:e: {{ animal.animal_type }}</div>
+        <div>Вид: {{ animal.animal_type }}</div>
 
         <div>Порода: {{ animal.breed }}</div>
 
@@ -63,6 +61,14 @@
         <div>Вес (граммы): {{ animal.weight }}</div>
 
         <div>Состояние здоровья: {{ animal.health_status }}</div>
+
+        <div>Статус: {{ statusChoices[animal.status] }}</div>
+
+        <div>Начало пребывания в приюте: {{ new Date(animal.created_at).toLocaleDateString() }}</div>
+
+        <div v-if="animal.left_at">Окончание пребывания в приюте: {{ new Date(animal.left_at).toLocaleDateString() }}</div>
+
+        <div v-html="animal.description"> </div>
       </div>
     </div>
   </div>
@@ -99,6 +105,13 @@ export default {
         'female': 'Самка',
         'unknown': 'Неизвестно',
       },
+
+      statusChoices: {
+        'in_shelter': 'В приюте',
+        'adopted': 'Приютили',
+        'missing': 'Отсутствует',
+      },
+
       user:null,
 
       modules: [Navigation, Pagination, A11y],
