@@ -72,6 +72,7 @@ class AnimalSerializer(serializers.ModelSerializer):
     photos = AnimalPhotoSerializer(many=True, read_only=True)
     gender = serializers.ChoiceField(choices=gender_choices)
     shelter_owner = serializers.ReadOnlyField(source='shelter.owner.id')
+    shelter_name = serializers.ReadOnlyField(source='shelter.name')
     status = serializers.ChoiceField(choices=status_choices)
     # created_at = serializers.SerializerMethodField()
     # left_at = serializers.SerializerMethodField()
@@ -88,6 +89,7 @@ class AnimalSerializer(serializers.ModelSerializer):
                   'name',
                   'shelter',
                   'shelter_owner',
+                  'shelter_name',
                   'animal_type',
                   'breed',
                   'age',
@@ -157,4 +159,5 @@ class ShelterListSerializer(serializers.ModelSerializer):
                   'rating',
                   'rounded_rating',
                   'efficiency_rating',
-                  'photos',)
+                  'photos',
+                  'order')

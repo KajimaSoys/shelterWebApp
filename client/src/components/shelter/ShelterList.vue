@@ -140,7 +140,7 @@ export default {
   data() {
     return {
       shelters: [],
-      searchText: '',
+      searchText: this.$route.query.q || '',
       currentPage: 1,
       totalPages: 1,
       perPage: 10,

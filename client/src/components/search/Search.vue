@@ -1,12 +1,12 @@
 <template>
   <div class="search-container">
-    <el-form class="search-form">
+    <el-form class="search-form" @submit.prevent>
       <el-form-item >
-        <el-input size="large" v-model="searchText" placeholder="Введите название приюта, местоположение или животное, которое ищете..."></el-input>
+        <el-input size="large" v-model="searchText" placeholder="Введите название приюта или местоположение" @keyup.enter="search()"></el-input>
       </el-form-item>
       <el-form-item class="buttons">
         <el-button type="plain" size="large" @click="goToShelters">Перейти к списку приютов</el-button>
-        <el-button type="plain" size="large" disabled @click="goToAnimals">Перейти к списку животных</el-button>
+        <el-button type="plain" size="large" @click="goToAnimals">Перейти к списку животных</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -25,8 +25,11 @@ export default {
       this.$router.push("/shelters");
     },
     goToAnimals() {
-      // this.$router.push("/animals"); // TODO добавить роут
+      this.$router.push("/animals");
     },
+    search() {
+      this.$router.push({ name: 'Shelters', query: { q: this.searchText } });
+    }
   },
 };
 </script>
@@ -36,11 +39,15 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 90%;
+  margin-top: 6rem;
+  height: 40%;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-form {
-  width: 75%;
+  width: 100%;
   backdrop-filter: blur(4px) brightness(0.3);
   padding: 2rem;
   border-radius: 20px;

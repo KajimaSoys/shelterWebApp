@@ -8,6 +8,7 @@ import ShelterView from '@/views/ShelterView.vue';
 import AddAnimalView from '@/views/AddAnimalView.vue';
 import EditAnimalView from '@/views/EditAnimalView.vue';
 import AnimalView from '@/views/AnimalView.vue';
+import AnimalListView from "@/views/AnimalListView.vue";
 import AddFundraisingView from '@/views/AddFundraisingView.vue';
 import EditFundraisingView from '@/views/EditFundraisingView.vue';
 import LoginView from '@/views/LoginView.vue';
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/shelters',
       name: 'Shelters',
       component: SheltersView,
+    },
+    {
+      path: '/animals',
+      name: 'Animals',
+      component: AnimalListView,
     },
     {
       path: '/shelters/add',
