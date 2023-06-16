@@ -52,7 +52,7 @@ class RegisterView(generics.CreateAPIView):
 
 class UserDetailsView(APIView):
     """
-    View to provide user details
+    Вью для предоставления данных о пользователе
     """
     permission_classes = [permissions.IsAuthenticated, ]
 

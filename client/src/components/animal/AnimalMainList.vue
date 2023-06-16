@@ -344,6 +344,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  text-align: left;
 }
 
 .animal-card-info div{

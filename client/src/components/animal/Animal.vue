@@ -303,6 +303,7 @@ svg path{
     flex-direction: column;
     align-items: flex-start;
     gap: 0.7rem;
+    text-align: left;
 }
 
 .animal-content-info a{
