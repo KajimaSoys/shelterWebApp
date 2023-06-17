@@ -198,6 +198,13 @@ export default {
           isNew: false,
         }));
       } catch (error) {
+        if (error.response && error.response.status === 400) {
+          ElNotification({
+            title: 'Ошибка!',
+            message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+            type: 'error',
+          });
+        }
         console.log(error);
       }
     },
@@ -215,6 +222,13 @@ export default {
         await axios.delete(`/api/v1/animal_photos/${file.name}/`);
         this.fileList = this.fileList.filter(f => f !== file);
       } catch (error) {
+        if (error.response && error.response.status === 400) {
+          ElNotification({
+            title: 'Ошибка!',
+            message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+            type: 'error',
+          });
+        }
         console.log(error);
       }
     },
@@ -242,6 +256,13 @@ export default {
               }
             });
           } catch (error) {
+            if (error.response && error.response.status === 400) {
+              ElNotification({
+                title: 'Ошибка!',
+                message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+                type: 'error',
+              });
+            }
             console.log(error);
           }
         }
@@ -271,6 +292,13 @@ export default {
             if (error.response && error.response.status === 401) {
               await this.$refreshToken();
               return this.onSubmit();
+            }
+            if (error.response && error.response.status === 400) {
+              ElNotification({
+                title: 'Ошибка!',
+                message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+                type: 'error',
+              });
             }
             console.log(error);
           }

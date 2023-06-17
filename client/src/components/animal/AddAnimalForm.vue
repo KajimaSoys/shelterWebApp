@@ -94,6 +94,7 @@
 
 <script>
 import axios from "axios";
+import {ElNotification} from "element-plus";
 
 export default {
   name: "AddAnimalForm",
@@ -231,8 +232,8 @@ export default {
                 health_status: '',
                 description: '',
                 status: 'in_shelter',
-                created_at: '',
-                left_at: '',
+                created_at: new Date().toLocaleDateString(),
+                left_at: null,
                 shelter: this.$route.params.id
               }
               this.fileList = []
@@ -244,6 +245,13 @@ export default {
             if (error.response && error.response.status === 401) {
               await this.$refreshToken();
               return this.onSubmit();
+            }
+            if (error.response && error.response.status === 400) {
+              ElNotification({
+                title: 'Ошибка!',
+                message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+                type: 'error',
+              });
             }
             console.log(error);
           }
@@ -270,6 +278,13 @@ export default {
           });
         } catch (error) {
           console.log(error);
+          if (error.response && error.response.status === 400) {
+              ElNotification({
+                title: 'Ошибка!',
+                message: `Произошла ошибка при запросе: ${JSON.stringify(error.response.data)}`,
+                type: 'error',
+              });
+            }
         }
       }
     },
