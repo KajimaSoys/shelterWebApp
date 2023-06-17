@@ -4,7 +4,7 @@
     <el-form
       :model="form"
       @submit.native.prevent="onSubmit"
-      label-width="160px"
+      label-width="260px"
       :rules="rules"
       status-icon
       ref="animalDataRef"
